@@ -1,0 +1,26 @@
+# Preface {.unnumbered}
+
+```{r setup, include=FALSE, message = FALSE, warning = FALSE}
+knitr::opts_chunk$set(echo = TRUE, comment = NA, fig.align = "center", fig.width = 4, fig.height = 4, message = FALSE, warning = FALSE)
+library(tidyverse)
+# Parallel Processing
+library(doMC)
+registerDoMC(cores = 20)
+```
+
+This material is from the [DataCamp](https://www.datacamp.com) course [Modeling with tidymodels in R](https://app.datacamp.com/learn/courses/modeling-with-tidymodels-in-r) by David Svancer.
+
+**Course Description:** Tidymodels [@R-tidymodels] is a powerful suite of R packages designed to streamline machine learning workflows. Learn to split datasets for cross-validation, preprocess data with tidymodels' recipe package, and fine-tune machine learning algorithms. You'll learn key concepts such as defining model objects and creating modeling workflows. Then, you'll apply your skills to predict home prices and classify employees by their risk of leaving a company.
+
+Reminder to self: each `*.qmd` file contains one and only one chapter, and a chapter is defined by the first-level heading `#`.
+
+```{r include=FALSE, eval = TRUE}
+# automatically create a bib database for R packages
+knitr::write_bib(c(
+  .packages(), 'bookdown', 'knitr', 'rmarkdown', 'caret', 
+  'caTools', 'ggplot2', "ranger", "randomForest", 'tidyverse',
+  'broom', 'dplyr', 'pwr', 'haven', 'simputation', 'cluster', 
+  'agricolae', 'naniar', 'mice', 'tidymodels','rsample', 'recipes', 
+  'parsnip', 'dials', 'tune', 'yardstick', 'workflows'), 
+  'packages.bib')
+```

@@ -1,0 +1,352 @@
+# Machine Learning with `tidymodels`
+
+
+```{r include=FALSE, message = FALSE, warning = FALSE}
+knitr::opts_chunk$set(echo = TRUE, comment = NA, fig.align = "center", fig.width = 4, fig.height = 4, message = FALSE, warning = FALSE)
+library(tidyverse)
+library(tidymodels)
+library(knitr)
+# Parallel Processing
+library(doMC)
+registerDoMC(cores = 20)
+```
+
+In this chapter, you’ll explore the rich ecosystem of R packages that power `tidymodels` [@R-tidymodels] and learn how they can streamline your machine learning workflows. You’ll then put your `tidymodels` skills to the test by predicting house sale prices in Seattle, Washington.
+
+## The tidymodels ecosystem video {-}
+<iframe src="https://drive.google.com/file/d/1NASccatYUsZMWAfpTbOHFI4yco0vFeM-/preview" width="640" height="480" allow="autoplay"></iframe>
+
+
+## Tidymodels packages
+
+`tidymodels` is a collection of machine learning packages designed to simplify the machine learning workflow in R.
+
+In this exercise, you will assign each package within the `tidymodels` ecosystem to its corresponding process within the machine learning workflow.
+
+```{r, echo = FALSE}
+knitr::include_graphics("./pics/ex1_1ans.png")
+```
+
+The core packages within `tidymodels` are designed to help with every stage in a machine learning workflow.
+
+
+## Creating training and test datasets
+
+The `rsample` package [@R-rsample] is designed to create training and test datasets. Creating a test dataset is important for estimating how a trained model will likely perform on new data. It also guards against overfitting, where a model memorizes patterns that exist only in the training data and performs poorly on new data.
+
+In this exercise, you will create training and test datasets from the `home_sales` data. This data contains information on homes sold in the Seattle, Washington area between 2015 and 2016.
+
+The outcome variable in this data is `selling_price`.
+
+The `tidymodels` package will be pre-loaded in every exercise in the course. The `home_sales` tibble has also been loaded for you.
+
+```{r}
+library(tidymodels)
+home_sales <- readRDS("./data/home_sales.rds")
+head(home_sales)
+```
+### Instructions{-}
+
+* Create an `rsample` object, `home_split`, that contains the instructions for randomly splitting the `home_sales` data into a training and test dataset.  Allocate 70% of the data into training and stratify the results by `selling_price`.
+
+
+```{r}
+set.seed(156)
+# Create a data split object
+home_split <- initial_split(home_sales, 
+                            prop = 0.70, 
+                            strata = selling_price)
+home_split
+```
+
+* Create a training dataset from `home_split` called `home_training`.
+
+```{r}
+# Create the training data
+home_training <- home_split |>
+ training()
+str(home_training)
+```
+
+* Create the `home_test` tibble by passing `home_split` into the appropriate function for generating test datasets.
+
+```{r}
+# Create the test data
+home_test <- home_split |> 
+  testing()
+str(home_test)
+```
+
+* Check the number of rows in the training and test datasets by passing them into the `nrow()` function.
+
+```{r}
+# Check number of rows in each dataset
+nrow(home_training)
+nrow(home_test)
+```
+
+:::{.callout-note}
+Since the `home_sales` data has `r nrow(home_sales)` rows, it is appropriate to allocate more rows into the test set. This will provide more data for the model evaluation step.
+:::
+
+## Distribution of outcome variable values
+
+Stratifying by the outcome variable when generating training and test datasets ensures that the outcome variable values have a similar range in both datasets.
+
+Since the original data is split at random, stratification avoids placing all the expensive homes in `home_sales` into the test dataset, for example. In this case, your model would most likely perform poorly because it was trained on less expensive homes.
+
+In this exercise, you will calculate summary statistics for the `selling_price` variable in the training and test datasets. The `home_training` and `home_test` tibbles have been loaded from the previous exercise.
+
+### Instructions{-}
+
+* Calculate the minimum, maximum, mean, and standard deviation of the `selling_price` variable in `home_training`.
+
+```{r}
+# Distribution of selling_price in training data
+home_training |>  
+  summarize(min_sell_price = min(selling_price),
+            max_sell_price = max(selling_price),
+            mean_sell_price = mean(selling_price),
+            sd_sell_price = sd(selling_price)) |> 
+  kable()
+```
+
+* Calculate the minimum, maximum, mean, and standard deviation of the `selling_price` variable in `home_test`.
+
+```{r}
+# Distribution of selling_price in test data
+home_test |>  
+  summarize(min_sell_price = min(selling_price),
+            max_sell_price = max(selling_price),
+            mean_sell_price = mean(selling_price),
+            sd_sell_price = sd(selling_price)) |> 
+  kable()
+```
+:::{.callout-note}
+The minimum and maximum selling prices in both datasets are the same. The mean and standard deviation are also similar. Stratifying by the outcome variable ensures the model fitting process is performed on a representative sample of the original data.
+:::
+
+
+## Linear regression with tidymodels video {-   }
+
+<iframe src="https://drive.google.com/file/d/1kD5IDbJW4yRIcN1nLUNaL78gH64aMDz9/preview" width="640" height="480" allow="autoplay"></iframe>
+
+
+## Fitting a linear regression model 
+
+The `parsnip` package [@R-parsnip] provides a unified syntax for the model fitting process in R.
+
+With `parsnip`, it is easy to define models using the various packages, or engines, that exist in the R ecosystem.
+
+In this exercise, you will define a `parsnip` linear regression object and train your model to predict `selling_price` using `home_age` and `sqft_living` as predictor variables from the `home_sales` data.
+
+The `home_training` and `home_test` tibbles that you created in the previous lesson have been loaded into this session.
+
+### Instructions {-}
+
+* Initialize a linear regression object, `linear_model`, with the appropriate `parsnip` function.  Use the `"lm"` engine.  Set the mode to `"regression"`.
+
+```{r}
+# Initialize a linear regression object, linear_model
+linear_model <- linear_reg() |> 
+  # Set the model engine
+  set_engine('lm') |> 
+  # Set the model mode
+  set_mode('regression')
+linear_model
+```
+
+* Train your model to predict `selling_price` using `home_age` and `sqft_living` as predictor variables from the `home_training` dataset.  Print `lm_fit` to view the model information.
+
+```{r}
+# Train the model with the training data
+lm_fit <- linear_model |> 
+  fit(selling_price ~ home_age + sqft_living,
+      data = home_training)
+
+# Print lm_fit to view model information
+lm_fit
+tidy(lm_fit) |> 
+  kable()
+```
+:::{.callout-note}
+You have defined your model with `linear_reg()` and trained it to predict `selling_price` using `home_age` and `sqft_living`. Printing a `parsnip` model fit object displays useful model information, such as the training time, model formula used during training, and the estimated model parameters.
+:::
+
+## Exploring estimated model parameters
+In the previous exercise, you trained a linear regression model to predict `selling_price` using `home_age` and `sqft_living` as predictor variables.
+
+Your trained model, `lm_fit`, has been loaded into this session.
+
+Pass your trained model object, `lm_fit` into the appropriate function to explore the estimated model parameters.
+
+Which of the following statements is correct?
+
+* The standard error, std.error, for the `sqft_living` predictor variable is 175.
+
+* The estimated parameter for the `home_age` predictor variable is 305.
+
+* **The estimated parameter for the `sqft_living` predictor variable is 104.**
+
+* The estimated intercept is 127825.
+
+:::{.callout-note}
+The `tidy()` function automatically creates a tibble of estimated model parameters. Since `sqft_living` has a positive estimated parameter, the selling price of homes increases with the square footage. Conversely, since `home_age` has a negative estimated parameter, older homes tend to have lower selling prices.
+:::
+
+## Predicting home selling prices {-}
+After fitting a model using the training data, the next step is to use it to make predictions on the test dataset. The test dataset acts as a new source of data for the model and will allow you to evaluate how well it performs.
+
+Before you can evaluate model performance, you must add your predictions to the test dataset.
+
+In this exercise, you will use your trained model, `lm_fit`, to predict `selling_price` in the `home_test` dataset.
+
+Your trained model, `lm_fit`, as well as the test dataset, `home_test` have been loaded into your session.
+
+### Instructions {-}
+
+* Create a tibble, `home_predictions`, that contains the predicted selling prices of homes in the test dataset.
+
+```{r}
+# Predict selling_price
+home_predictions <- predict(lm_fit,
+                            new_data = home_test)
+
+# View predicted selling prices
+head(home_predictions) |> 
+  kable()
+```
+
+* Create a tibble with the `selling_price`, `home_age`, and `sqft_living` columns from the test dataset and the predicted home selling prices.
+
+```{r}
+# Combine test data with predictions
+home_test_results <- home_test |> 
+  select(selling_price, home_age, sqft_living) |> 
+  bind_cols(home_predictions)
+head(home_test_results) |> 
+  kable()
+```
+:::{.callout-note}
+You have trained a linear regression model and used it to predict the selling prices of homes in the test dataset! The model only used two predictor variables, but the predicted values in the `.pred` column seem reasonable!
+:::
+
+## Evaluating model performance video {-}
+<iframe src="https://drive.google.com/file/d/16RY6iHMkjLG4cWeOwiN8KCbbmdagP9pe/preview" width="640" height="480" allow="autoplay"></iframe>
+
+
+
+## Model performance metrics
+Evaluating model results is an important step in the modeling process. Model evaluation should be done on the test dataset in order to see how well a model will generalize to new datasets.
+
+In the previous exercise, you trained a linear regression model to predict `selling_price` using `home_age` and `sqft_living` as predictor variables. You then created the `home_test_results` tibble using your trained model on the `home_test` data.
+
+In this exercise, you will calculate the RMSE and $R^2$ metrics using your results in `home_test_results`.
+
+The `home_test_results` tibble has been loaded into your session.
+
+### Instructions{-}
+
+* Execute the first two lines of code which print the `home_test_results`. This tibble contains the actual and predicted home selling prices in the `home_test dataset`.  Using `home_test_results`, calculate the RMSE and R squared metrics.
+
+```{r}
+# Print home_test_results
+head(home_test_results)
+
+# Calculate the RMSE metric
+home_test_results |> 
+  rmse(truth = selling_price, estimate = .pred) -> ARMSE
+kable(ARMSE)
+# Same as
+home_test_results |> 
+  summarize(RMSE = sqrt(mean((selling_price - .pred)^2)))
+# Calculate the R squared metric
+home_test_results |> 
+  rsq(truth = selling_price, estimate = .pred) -> AR2
+kable(AR2)
+# Same as
+home_test_results |> 
+  summarize(R2 = cor(selling_price, .pred)^2)
+```
+:::{.callout-note}
+The RMSE metric indicates that the average prediction error for home selling prices is `r scales::dollar(ARMSE$.estimate)`. Not bad considering you only used `home_age` and `sqft_living` as predictor variables!
+:::
+
+## R squared plot
+In the previous exercise, you got an $R^2$ value of `r AR2$estimate`. The $R^2$ metric ranges from 0 to 1, 0 being the worst and 1 the best.
+
+Calculating the $R^2$ value is only the first step in studying your model's predictions.
+
+Making an $R^2$ plot is extremely important because it will uncover potential problems with your model, such as non-linear patterns or regions where your model is either over or under-predicting the outcome variable.
+
+In this exercise, you will create an $R^2$ plot of your model's performance.
+
+The `home_test_results` tibble has been loaded into your session.
+
+### Instructions {-}
+
+* Create an $R^2$ plot of your model's performance. The x-axis should have the actual selling price and the y-axis should have the predicted values.  Use the appropriate functions to add the line $y = x$ to your plot and standardize the range of both axes.
+
+```{r}
+# Create an R squared plot of model performance
+ggplot(home_test_results, aes(x = selling_price, y = .pred)) +
+  geom_point(alpha = 0.5) + 
+  geom_abline(color = 'blue', linetype = "dashed") +
+  coord_obs_pred() +
+  labs(x = 'Actual Home Selling Price', y = 'Predicted Selling Price') + 
+  theme_bw()
+```
+:::{.callout-note}
+From the plot, you can see that your model tends to over-predict selling prices for homes that sold for less than $400,000, and under-predict for homes that sold for $600,000 or more. This indicates that you will have to add more predictors to your model or that linear regression may not be able to model the relationship as well as more advanced modeling techniques!
+:::
+
+## Complete model fitting process with `last_fit()`
+In this exercise, you will train and evaluate the performance of a linear regression model that predicts `selling_price` using all the predictors available in the `home_sales` tibble.
+
+This exercise will give you a chance to perform the entire model fitting process with `tidymodels`, from defining your model object to evaluating its performance on the test data.
+
+Earlier in the chapter, you created an `rsample` object called `home_split` by passing the `home_sales` tibble into `initial_split()`. The `home_split` object contains the instructions for randomly splitting `home_sales` into training and test sets.
+
+The `home_sales` tibble, and `home_split` object have been loaded into this session.
+
+### Instructions {-}
+
+* Use the `linear_reg()` function to define a linear regression model object. Use the `lm` engine.
+
+```{r}
+# Define a linear regression model
+linear_model <- linear_reg() |> 
+  set_engine("lm") |> 
+  set_mode("regression")
+```
+
+* Train your linear regression object with the `last_fit()` function.  In your model formula, use `selling_price` as the outcome variable and all other columns as predictor variables.  Create a tibble with the model's predictions on the test data.
+
+```{r}
+# Train linear_model with last_fit()
+linear_fit <- linear_model |> 
+  last_fit(selling_price ~ ., split = home_split)
+
+# Collect predictions and view results
+predictions_df <- linear_fit |> 
+  collect_predictions()
+predictions_df |> 
+  head() |> 
+  kable()
+```
+
+* Create an $R^2$ plot of the model's performance. The x-axis should have the actual selling price and the y-axis should have the predicted values.
+
+```{r}
+# Make an R squared plot using predictions_df
+ggplot(predictions_df, aes(x = selling_price, y = .pred)) + 
+  geom_point(alpha = 0.5) + 
+  geom_abline(color = 'blue', linetype = "dashed") +
+  coord_obs_pred() +
+  labs(x = 'Actual Home Selling Price', y = 'Predicted Selling Price') + 
+  theme_bw()
+```
+
+:::{.callout-note}
+You have created your first machine learning pipeline and visualized the performance of your model. From the $R^2$ plot, the model still tends to over-predict selling prices for homes that sold for less than $400,000 and under-predict for homes at $600,000 or more, but it is a slight improvement over your previous model with only two predictor variables.
+:::

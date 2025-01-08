@@ -1,0 +1,1252 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.3.433">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+
+<title>Modeling with tidymodels in R - 1&nbsp; Machine Learning with tidymodels</title>
+<style>
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+/* CSS for syntax highlighting */
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+/* CSS for citations */
+div.csl-bib-body { }
+div.csl-entry {
+  clear: both;
+}
+.hanging-indent div.csl-entry {
+  margin-left:2em;
+  text-indent:-2em;
+}
+div.csl-left-margin {
+  min-width:2em;
+  float:left;
+}
+div.csl-right-inline {
+  margin-left:2em;
+  padding-left:1em;
+}
+div.csl-indent {
+  margin-left: 2em;
+}</style>
+
+
+<script src="site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="site_libs/quarto-nav/headroom.min.js"></script>
+<script src="site_libs/clipboard/clipboard.min.js"></script>
+<script src="site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="site_libs/quarto-search/fuse.min.js"></script>
+<script src="site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="./">
+<link href="./references.html" rel="next">
+<link href="./index.html" rel="prev">
+<script src="site_libs/quarto-html/quarto.js"></script>
+<script src="site_libs/quarto-html/popper.min.js"></script>
+<script src="site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="site_libs/quarto-html/anchor.min.js"></script>
+<link href="site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="site_libs/quarto-html/quarto-syntax-highlighting.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="site_libs/bootstrap/bootstrap.min.css" rel="stylesheet" id="quarto-bootstrap" data-mode="light">
+<script id="quarto-search-options" type="application/json">{
+  "location": "sidebar",
+  "copy-button": false,
+  "collapse-after": 3,
+  "panel-placement": "start",
+  "type": "textbox",
+  "limit": 20,
+  "language": {
+    "search-no-results-text": "No results",
+    "search-matching-documents-text": "matching documents",
+    "search-copy-link-title": "Copy link to search",
+    "search-hide-matches-text": "Hide additional matches",
+    "search-more-match-text": "more match in this document",
+    "search-more-matches-text": "more matches in this document",
+    "search-clear-button-title": "Clear",
+    "search-detached-cancel-button-title": "Cancel",
+    "search-submit-button-title": "Submit",
+    "search-label": "Search"
+  }
+}</script>
+
+  <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+  <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml-full.js" type="text/javascript"></script>
+
+</head>
+
+<body class="nav-sidebar floating">
+
+<div id="quarto-search-results"></div>
+  <header id="quarto-header" class="headroom fixed-top">
+  <nav class="quarto-secondary-nav">
+    <div class="container-fluid d-flex">
+      <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar,#quarto-sidebar-glass" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+        <i class="bi bi-layout-text-sidebar-reverse"></i>
+      </button>
+      <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./01-MWTM.html"><span class="chapter-number">1</span>&nbsp; <span class="chapter-title">Machine Learning with `tidymodels`</span></a></li></ol></nav>
+      <a class="flex-grow-1" role="button" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar,#quarto-sidebar-glass" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
+      </a>
+      <button type="button" class="btn quarto-search-button" aria-label="" onclick="window.quartoOpenSearch();">
+        <i class="bi bi-search"></i>
+      </button>
+    </div>
+  </nav>
+</header>
+<!-- content -->
+<div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article">
+<!-- sidebar -->
+  <nav id="quarto-sidebar" class="sidebar collapse collapse-horizontal sidebar-navigation floating overflow-auto">
+    <div class="pt-lg-2 mt-2 text-left sidebar-header">
+    <div class="sidebar-title mb-0 py-0">
+      <a href="./"></a><a href="https://app.datacamp.com/learn/courses/modeling-with-tidymodels-in-r">Modeling with <code>tidymodels</code> in R</a> 
+    </div>
+      </div>
+        <div class="mt-2 flex-shrink-0 align-items-center">
+        <div class="sidebar-search">
+        <div id="quarto-search" class="" title="Search"></div>
+        </div>
+        </div>
+    <div class="sidebar-menu-container"> 
+    <ul class="list-unstyled mt-1">
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Preface</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./01-MWTM.html" class="sidebar-item-text sidebar-link active">
+ <span class="menu-text"><span class="chapter-number">1</span>&nbsp; <span class="chapter-title">Machine Learning with <code>tidymodels</code></span></span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./references.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">References</span></a>
+  </div>
+</li>
+    </ul>
+    </div>
+</nav>
+<div id="quarto-sidebar-glass" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar,#quarto-sidebar-glass"></div>
+<!-- margin-sidebar -->
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+        <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">Table of contents</h2>
+   
+  <ul>
+  <li><a href="#the-tidymodels-ecosystem-video" id="toc-the-tidymodels-ecosystem-video" class="nav-link active" data-scroll-target="#the-tidymodels-ecosystem-video">The tidymodels ecosystem video</a></li>
+  <li><a href="#tidymodels-packages" id="toc-tidymodels-packages" class="nav-link" data-scroll-target="#tidymodels-packages"><span class="header-section-number">1.1</span> Tidymodels packages</a></li>
+  <li><a href="#creating-training-and-test-datasets" id="toc-creating-training-and-test-datasets" class="nav-link" data-scroll-target="#creating-training-and-test-datasets"><span class="header-section-number">1.2</span> Creating training and test datasets</a>
+  <ul class="collapse">
+  <li><a href="#instructions" id="toc-instructions" class="nav-link" data-scroll-target="#instructions">Instructions</a></li>
+  </ul></li>
+  <li><a href="#distribution-of-outcome-variable-values" id="toc-distribution-of-outcome-variable-values" class="nav-link" data-scroll-target="#distribution-of-outcome-variable-values"><span class="header-section-number">1.3</span> Distribution of outcome variable values</a>
+  <ul class="collapse">
+  <li><a href="#instructions-1" id="toc-instructions-1" class="nav-link" data-scroll-target="#instructions-1">Instructions</a></li>
+  </ul></li>
+  <li><a href="#linear-regression-with-tidymodels-video" id="toc-linear-regression-with-tidymodels-video" class="nav-link" data-scroll-target="#linear-regression-with-tidymodels-video">Linear regression with tidymodels video</a></li>
+  <li><a href="#fitting-a-linear-regression-model" id="toc-fitting-a-linear-regression-model" class="nav-link" data-scroll-target="#fitting-a-linear-regression-model"><span class="header-section-number">1.4</span> Fitting a linear regression model</a>
+  <ul class="collapse">
+  <li><a href="#instructions-2" id="toc-instructions-2" class="nav-link" data-scroll-target="#instructions-2">Instructions</a></li>
+  </ul></li>
+  <li><a href="#exploring-estimated-model-parameters" id="toc-exploring-estimated-model-parameters" class="nav-link" data-scroll-target="#exploring-estimated-model-parameters"><span class="header-section-number">1.5</span> Exploring estimated model parameters</a></li>
+  <li><a href="#predicting-home-selling-prices" id="toc-predicting-home-selling-prices" class="nav-link" data-scroll-target="#predicting-home-selling-prices">Predicting home selling prices</a>
+  <ul class="collapse">
+  <li><a href="#instructions-3" id="toc-instructions-3" class="nav-link" data-scroll-target="#instructions-3">Instructions</a></li>
+  </ul></li>
+  <li><a href="#evaluating-model-performance-video" id="toc-evaluating-model-performance-video" class="nav-link" data-scroll-target="#evaluating-model-performance-video">Evaluating model performance video</a></li>
+  <li><a href="#model-performance-metrics" id="toc-model-performance-metrics" class="nav-link" data-scroll-target="#model-performance-metrics"><span class="header-section-number">1.6</span> Model performance metrics</a>
+  <ul class="collapse">
+  <li><a href="#instructions-4" id="toc-instructions-4" class="nav-link" data-scroll-target="#instructions-4">Instructions</a></li>
+  </ul></li>
+  <li><a href="#r-squared-plot" id="toc-r-squared-plot" class="nav-link" data-scroll-target="#r-squared-plot"><span class="header-section-number">1.7</span> R squared plot</a>
+  <ul class="collapse">
+  <li><a href="#instructions-5" id="toc-instructions-5" class="nav-link" data-scroll-target="#instructions-5">Instructions</a></li>
+  </ul></li>
+  <li><a href="#complete-model-fitting-process-with-last_fit" id="toc-complete-model-fitting-process-with-last_fit" class="nav-link" data-scroll-target="#complete-model-fitting-process-with-last_fit"><span class="header-section-number">1.8</span> Complete model fitting process with <code>last_fit()</code></a>
+  <ul class="collapse">
+  <li><a href="#instructions-6" id="toc-instructions-6" class="nav-link" data-scroll-target="#instructions-6">Instructions</a></li>
+  </ul></li>
+  </ul>
+</nav>
+    </div>
+<!-- main -->
+<main class="content" id="quarto-document-content">
+
+<header id="title-block-header" class="quarto-title-block default">
+<div class="quarto-title">
+<h1 class="title"><span class="chapter-number">1</span>&nbsp; <span class="chapter-title">Machine Learning with <code>tidymodels</code></span></h1>
+</div>
+
+
+
+<div class="quarto-title-meta">
+
+    
+  
+    
+  </div>
+  
+
+</header>
+
+<p>In this chapter, you’ll explore the rich ecosystem of R packages that power <code>tidymodels</code> <span class="citation" data-cites="R-tidymodels">(<a href="references.html#ref-R-tidymodels" role="doc-biblioref">Kuhn and Wickham 2024</a>)</span> and learn how they can streamline your machine learning workflows. You’ll then put your <code>tidymodels</code> skills to the test by predicting house sale prices in Seattle, Washington.</p>
+<section id="the-tidymodels-ecosystem-video" class="level2 unnumbered">
+<h2 class="unnumbered anchored" data-anchor-id="the-tidymodels-ecosystem-video">The tidymodels ecosystem video</h2>
+<iframe src="https://drive.google.com/file/d/1NASccatYUsZMWAfpTbOHFI4yco0vFeM-/preview" width="640" height="480" allow="autoplay">
+</iframe>
+</section>
+<section id="tidymodels-packages" class="level2" data-number="1.1">
+<h2 data-number="1.1" class="anchored" data-anchor-id="tidymodels-packages"><span class="header-section-number">1.1</span> Tidymodels packages</h2>
+<p><code>tidymodels</code> is a collection of machine learning packages designed to simplify the machine learning workflow in R.</p>
+<p>In this exercise, you will assign each package within the <code>tidymodels</code> ecosystem to its corresponding process within the machine learning workflow.</p>
+<div class="cell" data-layout-align="center">
+<div class="cell-output-display">
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="./pics/ex1_1ans.png" class="img-fluid figure-img" width="982"></p>
+</figure>
+</div>
+</div>
+</div>
+<p>The core packages within <code>tidymodels</code> are designed to help with every stage in a machine learning workflow.</p>
+</section>
+<section id="creating-training-and-test-datasets" class="level2" data-number="1.2">
+<h2 data-number="1.2" class="anchored" data-anchor-id="creating-training-and-test-datasets"><span class="header-section-number">1.2</span> Creating training and test datasets</h2>
+<p>The <code>rsample</code> package <span class="citation" data-cites="R-rsample">(<a href="references.html#ref-R-rsample" role="doc-biblioref">Frick et al. 2024</a>)</span> is designed to create training and test datasets. Creating a test dataset is important for estimating how a trained model will likely perform on new data. It also guards against overfitting, where a model memorizes patterns that exist only in the training data and performs poorly on new data.</p>
+<p>In this exercise, you will create training and test datasets from the <code>home_sales</code> data. This data contains information on homes sold in the Seattle, Washington area between 2015 and 2016.</p>
+<p>The outcome variable in this data is <code>selling_price</code>.</p>
+<p>The <code>tidymodels</code> package will be pre-loaded in every exercise in the course. The <code>home_sales</code> tibble has also been loaded for you.</p>
+<div class="cell" data-layout-align="center">
+<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(tidymodels)</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a>home_sales <span class="ot">&lt;-</span> <span class="fu">readRDS</span>(<span class="st">"./data/home_sales.rds"</span>)</span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(home_sales)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 6 × 8
+  selling_price home_age bedrooms bathrooms sqft_living sqft_lot sqft_basement
+          &lt;dbl&gt;    &lt;dbl&gt;    &lt;dbl&gt;     &lt;dbl&gt;       &lt;dbl&gt;    &lt;dbl&gt;         &lt;dbl&gt;
+1        487000       10        4      2.5         2540     5001             0
+2        465000       10        3      2.25        1530     1245           480
+3        411000       18        2      2           1130     1148           330
+4        635000        4        3      2.5         3350     4007           800
+5        380000       24        5      2.5         2130     8428             0
+6        495000       21        3      3.5         1650     1577           550
+# ℹ 1 more variable: floors &lt;dbl&gt;</code></pre>
+</div>
+</div>
+<section id="instructions" class="level3 unnumbered">
+<h3 class="unnumbered anchored" data-anchor-id="instructions">Instructions</h3>
+<ul>
+<li>Create an <code>rsample</code> object, <code>home_split</code>, that contains the instructions for randomly splitting the <code>home_sales</code> data into a training and test dataset. Allocate 70% of the data into training and stratify the results by <code>selling_price</code>.</li>
+</ul>
+<div class="cell" data-layout-align="center">
+<div class="sourceCode cell-code" id="cb3"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">156</span>)</span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a><span class="co"># Create a data split object</span></span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a>home_split <span class="ot">&lt;-</span> <span class="fu">initial_split</span>(home_sales, </span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a>                            <span class="at">prop =</span> <span class="fl">0.70</span>, </span>
+<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a>                            <span class="at">strata =</span> selling_price)</span>
+<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a>home_split</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>&lt;Training/Testing/Total&gt;
+&lt;1042/450/1492&gt;</code></pre>
+</div>
+</div>
+<ul>
+<li>Create a training dataset from <code>home_split</code> called <code>home_training</code>.</li>
+</ul>
+<div class="cell" data-layout-align="center">
+<div class="sourceCode cell-code" id="cb5"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Create the training data</span></span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>home_training <span class="ot">&lt;-</span> home_split <span class="sc">|&gt;</span></span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a> <span class="fu">training</span>()</span>
+<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a><span class="fu">str</span>(home_training)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>tibble [1,042 × 8] (S3: tbl_df/tbl/data.frame)
+ $ selling_price: num [1:1042] 380000 355000 356000 381000 398000 ...
+ $ home_age     : num [1:1042] 24 19 24 25 14 9 37 30 26 7 ...
+ $ bedrooms     : num [1:1042] 5 3 2 3 3 3 3 3 3 3 ...
+ $ bathrooms    : num [1:1042] 2.5 2.25 1 2 1.5 2.5 2.25 2.25 2.5 2.25 ...
+ $ sqft_living  : num [1:1042] 2130 1430 1430 1680 1310 1600 1410 1410 1600 1410 ...
+ $ sqft_lot     : num [1:1042] 8428 4777 365904 8946 2996 ...
+ $ sqft_basement: num [1:1042] 0 0 420 740 0 0 120 120 0 120 ...
+ $ floors       : num [1:1042] 2 2 1 1 2 2 2 2 2 2 ...</code></pre>
+</div>
+</div>
+<ul>
+<li>Create the <code>home_test</code> tibble by passing <code>home_split</code> into the appropriate function for generating test datasets.</li>
+</ul>
+<div class="cell" data-layout-align="center">
+<div class="sourceCode cell-code" id="cb7"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Create the test data</span></span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a>home_test <span class="ot">&lt;-</span> home_split <span class="sc">|&gt;</span> </span>
+<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">testing</span>()</span>
+<span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a><span class="fu">str</span>(home_test)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>tibble [450 × 8] (S3: tbl_df/tbl/data.frame)
+ $ selling_price: num [1:450] 411000 425000 535000 559900 552321 ...
+ $ home_age     : num [1:450] 18 11 3 20 29 6 22 25 26 24 ...
+ $ bedrooms     : num [1:450] 2 4 4 3 3 3 3 3 5 3 ...
+ $ bathrooms    : num [1:450] 2 2.5 2.75 2.75 2.5 2.25 2.5 2.5 3.75 2.25 ...
+ $ sqft_living  : num [1:450] 1130 1920 2360 2930 1960 ...
+ $ sqft_lot     : num [1:450] 1148 9000 15100 5569 8469 ...
+ $ sqft_basement: num [1:450] 330 0 0 1070 0 350 0 0 0 145 ...
+ $ floors       : num [1:450] 2 2 1 1 2 2 2 2 2 2 ...</code></pre>
+</div>
+</div>
+<ul>
+<li>Check the number of rows in the training and test datasets by passing them into the <code>nrow()</code> function.</li>
+</ul>
+<div class="cell" data-layout-align="center">
+<div class="sourceCode cell-code" id="cb9"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Check number of rows in each dataset</span></span>
+<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a><span class="fu">nrow</span>(home_training)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 1042</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb11"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a><span class="fu">nrow</span>(home_test)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 450</code></pre>
+</div>
+</div>
+<div class="callout callout-style-default callout-note callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Note
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>Since the <code>home_sales</code> data has 1492 rows, it is appropriate to allocate more rows into the test set. This will provide more data for the model evaluation step.</p>
+</div>
+</div>
+</section>
+</section>
+<section id="distribution-of-outcome-variable-values" class="level2" data-number="1.3">
+<h2 data-number="1.3" class="anchored" data-anchor-id="distribution-of-outcome-variable-values"><span class="header-section-number">1.3</span> Distribution of outcome variable values</h2>
+<p>Stratifying by the outcome variable when generating training and test datasets ensures that the outcome variable values have a similar range in both datasets.</p>
+<p>Since the original data is split at random, stratification avoids placing all the expensive homes in <code>home_sales</code> into the test dataset, for example. In this case, your model would most likely perform poorly because it was trained on less expensive homes.</p>
+<p>In this exercise, you will calculate summary statistics for the <code>selling_price</code> variable in the training and test datasets. The <code>home_training</code> and <code>home_test</code> tibbles have been loaded from the previous exercise.</p>
+<section id="instructions-1" class="level3 unnumbered">
+<h3 class="unnumbered anchored" data-anchor-id="instructions-1">Instructions</h3>
+<ul>
+<li>Calculate the minimum, maximum, mean, and standard deviation of the <code>selling_price</code> variable in <code>home_training</code>.</li>
+</ul>
+<div class="cell" data-layout-align="center">
+<div class="sourceCode cell-code" id="cb13"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Distribution of selling_price in training data</span></span>
+<span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a>home_training <span class="sc">|&gt;</span>  </span>
+<span id="cb13-3"><a href="#cb13-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">summarize</span>(<span class="at">min_sell_price =</span> <span class="fu">min</span>(selling_price),</span>
+<span id="cb13-4"><a href="#cb13-4" aria-hidden="true" tabindex="-1"></a>            <span class="at">max_sell_price =</span> <span class="fu">max</span>(selling_price),</span>
+<span id="cb13-5"><a href="#cb13-5" aria-hidden="true" tabindex="-1"></a>            <span class="at">mean_sell_price =</span> <span class="fu">mean</span>(selling_price),</span>
+<span id="cb13-6"><a href="#cb13-6" aria-hidden="true" tabindex="-1"></a>            <span class="at">sd_sell_price =</span> <span class="fu">sd</span>(selling_price)) <span class="sc">|&gt;</span> </span>
+<span id="cb13-7"><a href="#cb13-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">kable</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<table class="table table-sm table-striped small">
+<thead>
+<tr class="header">
+<th style="text-align: right;">min_sell_price</th>
+<th style="text-align: right;">max_sell_price</th>
+<th style="text-align: right;">mean_sell_price</th>
+<th style="text-align: right;">sd_sell_price</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: right;">350000</td>
+<td style="text-align: right;">650000</td>
+<td style="text-align: right;">478448.6</td>
+<td style="text-align: right;">80394.43</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<ul>
+<li>Calculate the minimum, maximum, mean, and standard deviation of the <code>selling_price</code> variable in <code>home_test</code>.</li>
+</ul>
+<div class="cell" data-layout-align="center">
+<div class="sourceCode cell-code" id="cb14"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Distribution of selling_price in test data</span></span>
+<span id="cb14-2"><a href="#cb14-2" aria-hidden="true" tabindex="-1"></a>home_test <span class="sc">|&gt;</span>  </span>
+<span id="cb14-3"><a href="#cb14-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">summarize</span>(<span class="at">min_sell_price =</span> <span class="fu">min</span>(selling_price),</span>
+<span id="cb14-4"><a href="#cb14-4" aria-hidden="true" tabindex="-1"></a>            <span class="at">max_sell_price =</span> <span class="fu">max</span>(selling_price),</span>
+<span id="cb14-5"><a href="#cb14-5" aria-hidden="true" tabindex="-1"></a>            <span class="at">mean_sell_price =</span> <span class="fu">mean</span>(selling_price),</span>
+<span id="cb14-6"><a href="#cb14-6" aria-hidden="true" tabindex="-1"></a>            <span class="at">sd_sell_price =</span> <span class="fu">sd</span>(selling_price)) <span class="sc">|&gt;</span> </span>
+<span id="cb14-7"><a href="#cb14-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">kable</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<table class="table table-sm table-striped small">
+<thead>
+<tr class="header">
+<th style="text-align: right;">min_sell_price</th>
+<th style="text-align: right;">max_sell_price</th>
+<th style="text-align: right;">mean_sell_price</th>
+<th style="text-align: right;">sd_sell_price</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: right;">350000</td>
+<td style="text-align: right;">650000</td>
+<td style="text-align: right;">480556.9</td>
+<td style="text-align: right;">82387.91</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<div class="callout callout-style-default callout-note callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Note
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>The minimum and maximum selling prices in both datasets are the same. The mean and standard deviation are also similar. Stratifying by the outcome variable ensures the model fitting process is performed on a representative sample of the original data.</p>
+</div>
+</div>
+</section>
+</section>
+<section id="linear-regression-with-tidymodels-video" class="level2 unnumbered">
+<h2 class="unnumbered anchored" data-anchor-id="linear-regression-with-tidymodels-video">Linear regression with tidymodels video</h2>
+<iframe src="https://drive.google.com/file/d/1kD5IDbJW4yRIcN1nLUNaL78gH64aMDz9/preview" width="640" height="480" allow="autoplay">
+</iframe>
+</section>
+<section id="fitting-a-linear-regression-model" class="level2" data-number="1.4">
+<h2 data-number="1.4" class="anchored" data-anchor-id="fitting-a-linear-regression-model"><span class="header-section-number">1.4</span> Fitting a linear regression model</h2>
+<p>The <code>parsnip</code> package <span class="citation" data-cites="R-parsnip">(<a href="references.html#ref-R-parsnip" role="doc-biblioref">Kuhn and Vaughan 2024</a>)</span> provides a unified syntax for the model fitting process in R.</p>
+<p>With <code>parsnip</code>, it is easy to define models using the various packages, or engines, that exist in the R ecosystem.</p>
+<p>In this exercise, you will define a <code>parsnip</code> linear regression object and train your model to predict <code>selling_price</code> using <code>home_age</code> and <code>sqft_living</code> as predictor variables from the <code>home_sales</code> data.</p>
+<p>The <code>home_training</code> and <code>home_test</code> tibbles that you created in the previous lesson have been loaded into this session.</p>
+<section id="instructions-2" class="level3 unnumbered">
+<h3 class="unnumbered anchored" data-anchor-id="instructions-2">Instructions</h3>
+<ul>
+<li>Initialize a linear regression object, <code>linear_model</code>, with the appropriate <code>parsnip</code> function. Use the <code>"lm"</code> engine. Set the mode to <code>"regression"</code>.</li>
+</ul>
+<div class="cell" data-layout-align="center">
+<div class="sourceCode cell-code" id="cb15"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Initialize a linear regression object, linear_model</span></span>
+<span id="cb15-2"><a href="#cb15-2" aria-hidden="true" tabindex="-1"></a>linear_model <span class="ot">&lt;-</span> <span class="fu">linear_reg</span>() <span class="sc">|&gt;</span> </span>
+<span id="cb15-3"><a href="#cb15-3" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Set the model engine</span></span>
+<span id="cb15-4"><a href="#cb15-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">set_engine</span>(<span class="st">'lm'</span>) <span class="sc">|&gt;</span> </span>
+<span id="cb15-5"><a href="#cb15-5" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Set the model mode</span></span>
+<span id="cb15-6"><a href="#cb15-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">set_mode</span>(<span class="st">'regression'</span>)</span>
+<span id="cb15-7"><a href="#cb15-7" aria-hidden="true" tabindex="-1"></a>linear_model</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Linear Regression Model Specification (regression)
+
+Computational engine: lm </code></pre>
+</div>
+</div>
+<ul>
+<li>Train your model to predict <code>selling_price</code> using <code>home_age</code> and <code>sqft_living</code> as predictor variables from the <code>home_training</code> dataset. Print <code>lm_fit</code> to view the model information.</li>
+</ul>
+<div class="cell" data-layout-align="center">
+<div class="sourceCode cell-code" id="cb17"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Train the model with the training data</span></span>
+<span id="cb17-2"><a href="#cb17-2" aria-hidden="true" tabindex="-1"></a>lm_fit <span class="ot">&lt;-</span> linear_model <span class="sc">|&gt;</span> </span>
+<span id="cb17-3"><a href="#cb17-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">fit</span>(selling_price <span class="sc">~</span> home_age <span class="sc">+</span> sqft_living,</span>
+<span id="cb17-4"><a href="#cb17-4" aria-hidden="true" tabindex="-1"></a>      <span class="at">data =</span> home_training)</span>
+<span id="cb17-5"><a href="#cb17-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb17-6"><a href="#cb17-6" aria-hidden="true" tabindex="-1"></a><span class="co"># Print lm_fit to view model information</span></span>
+<span id="cb17-7"><a href="#cb17-7" aria-hidden="true" tabindex="-1"></a>lm_fit</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>parsnip model object
+
+
+Call:
+stats::lm(formula = selling_price ~ home_age + sqft_living, data = data)
+
+Coefficients:
+(Intercept)     home_age  sqft_living  
+   291587.2      -1550.0        103.8  </code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb19"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a><span class="fu">tidy</span>(lm_fit) <span class="sc">|&gt;</span> </span>
+<span id="cb19-2"><a href="#cb19-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">kable</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<table class="table table-sm table-striped small">
+<thead>
+<tr class="header">
+<th style="text-align: left;">term</th>
+<th style="text-align: right;">estimate</th>
+<th style="text-align: right;">std.error</th>
+<th style="text-align: right;">statistic</th>
+<th style="text-align: right;">p.value</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">(Intercept)</td>
+<td style="text-align: right;">291587.211</td>
+<td style="text-align: right;">7445.953323</td>
+<td style="text-align: right;">39.160494</td>
+<td style="text-align: right;">0</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">home_age</td>
+<td style="text-align: right;">-1549.992</td>
+<td style="text-align: right;">173.052920</td>
+<td style="text-align: right;">-8.956754</td>
+<td style="text-align: right;">0</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">sqft_living</td>
+<td style="text-align: right;">103.789</td>
+<td style="text-align: right;">2.706057</td>
+<td style="text-align: right;">38.354335</td>
+<td style="text-align: right;">0</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<div class="callout callout-style-default callout-note callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Note
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>You have defined your model with <code>linear_reg()</code> and trained it to predict <code>selling_price</code> using <code>home_age</code> and <code>sqft_living</code>. Printing a <code>parsnip</code> model fit object displays useful model information, such as the training time, model formula used during training, and the estimated model parameters.</p>
+</div>
+</div>
+</section>
+</section>
+<section id="exploring-estimated-model-parameters" class="level2" data-number="1.5">
+<h2 data-number="1.5" class="anchored" data-anchor-id="exploring-estimated-model-parameters"><span class="header-section-number">1.5</span> Exploring estimated model parameters</h2>
+<p>In the previous exercise, you trained a linear regression model to predict <code>selling_price</code> using <code>home_age</code> and <code>sqft_living</code> as predictor variables.</p>
+<p>Your trained model, <code>lm_fit</code>, has been loaded into this session.</p>
+<p>Pass your trained model object, <code>lm_fit</code> into the appropriate function to explore the estimated model parameters.</p>
+<p>Which of the following statements is correct?</p>
+<ul>
+<li><p>The standard error, std.error, for the <code>sqft_living</code> predictor variable is 175.</p></li>
+<li><p>The estimated parameter for the <code>home_age</code> predictor variable is 305.</p></li>
+<li><p><strong>The estimated parameter for the <code>sqft_living</code> predictor variable is 104.</strong></p></li>
+<li><p>The estimated intercept is 127825.</p></li>
+</ul>
+<div class="callout callout-style-default callout-note callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Note
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>The <code>tidy()</code> function automatically creates a tibble of estimated model parameters. Since <code>sqft_living</code> has a positive estimated parameter, the selling price of homes increases with the square footage. Conversely, since <code>home_age</code> has a negative estimated parameter, older homes tend to have lower selling prices.</p>
+</div>
+</div>
+</section>
+<section id="predicting-home-selling-prices" class="level2 unnumbered">
+<h2 class="unnumbered anchored" data-anchor-id="predicting-home-selling-prices">Predicting home selling prices</h2>
+<p>After fitting a model using the training data, the next step is to use it to make predictions on the test dataset. The test dataset acts as a new source of data for the model and will allow you to evaluate how well it performs.</p>
+<p>Before you can evaluate model performance, you must add your predictions to the test dataset.</p>
+<p>In this exercise, you will use your trained model, <code>lm_fit</code>, to predict <code>selling_price</code> in the <code>home_test</code> dataset.</p>
+<p>Your trained model, <code>lm_fit</code>, as well as the test dataset, <code>home_test</code> have been loaded into your session.</p>
+<section id="instructions-3" class="level3 unnumbered">
+<h3 class="unnumbered anchored" data-anchor-id="instructions-3">Instructions</h3>
+<ul>
+<li>Create a tibble, <code>home_predictions</code>, that contains the predicted selling prices of homes in the test dataset.</li>
+</ul>
+<div class="cell" data-layout-align="center">
+<div class="sourceCode cell-code" id="cb20"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb20-1"><a href="#cb20-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Predict selling_price</span></span>
+<span id="cb20-2"><a href="#cb20-2" aria-hidden="true" tabindex="-1"></a>home_predictions <span class="ot">&lt;-</span> <span class="fu">predict</span>(lm_fit,</span>
+<span id="cb20-3"><a href="#cb20-3" aria-hidden="true" tabindex="-1"></a>                            <span class="at">new_data =</span> home_test)</span>
+<span id="cb20-4"><a href="#cb20-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb20-5"><a href="#cb20-5" aria-hidden="true" tabindex="-1"></a><span class="co"># View predicted selling prices</span></span>
+<span id="cb20-6"><a href="#cb20-6" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(home_predictions) <span class="sc">|&gt;</span> </span>
+<span id="cb20-7"><a href="#cb20-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">kable</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<table class="table table-sm table-striped small">
+<thead>
+<tr class="header">
+<th style="text-align: right;">.pred</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: right;">380968.9</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;">473812.2</td>
+</tr>
+<tr class="odd">
+<td style="text-align: right;">531879.3</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;">564689.1</td>
+</tr>
+<tr class="odd">
+<td style="text-align: right;">450063.9</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;">535532.4</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<ul>
+<li>Create a tibble with the <code>selling_price</code>, <code>home_age</code>, and <code>sqft_living</code> columns from the test dataset and the predicted home selling prices.</li>
+</ul>
+<div class="cell" data-layout-align="center">
+<div class="sourceCode cell-code" id="cb21"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb21-1"><a href="#cb21-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Combine test data with predictions</span></span>
+<span id="cb21-2"><a href="#cb21-2" aria-hidden="true" tabindex="-1"></a>home_test_results <span class="ot">&lt;-</span> home_test <span class="sc">|&gt;</span> </span>
+<span id="cb21-3"><a href="#cb21-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">select</span>(selling_price, home_age, sqft_living) <span class="sc">|&gt;</span> </span>
+<span id="cb21-4"><a href="#cb21-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">bind_cols</span>(home_predictions)</span>
+<span id="cb21-5"><a href="#cb21-5" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(home_test_results) <span class="sc">|&gt;</span> </span>
+<span id="cb21-6"><a href="#cb21-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">kable</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<table class="table table-sm table-striped small">
+<thead>
+<tr class="header">
+<th style="text-align: right;">selling_price</th>
+<th style="text-align: right;">home_age</th>
+<th style="text-align: right;">sqft_living</th>
+<th style="text-align: right;">.pred</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: right;">411000</td>
+<td style="text-align: right;">18</td>
+<td style="text-align: right;">1130</td>
+<td style="text-align: right;">380968.9</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;">425000</td>
+<td style="text-align: right;">11</td>
+<td style="text-align: right;">1920</td>
+<td style="text-align: right;">473812.2</td>
+</tr>
+<tr class="odd">
+<td style="text-align: right;">535000</td>
+<td style="text-align: right;">3</td>
+<td style="text-align: right;">2360</td>
+<td style="text-align: right;">531879.3</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;">559900</td>
+<td style="text-align: right;">20</td>
+<td style="text-align: right;">2930</td>
+<td style="text-align: right;">564689.1</td>
+</tr>
+<tr class="odd">
+<td style="text-align: right;">552321</td>
+<td style="text-align: right;">29</td>
+<td style="text-align: right;">1960</td>
+<td style="text-align: right;">450063.9</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;">485000</td>
+<td style="text-align: right;">6</td>
+<td style="text-align: right;">2440</td>
+<td style="text-align: right;">535532.4</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<div class="callout callout-style-default callout-note callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Note
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>You have trained a linear regression model and used it to predict the selling prices of homes in the test dataset! The model only used two predictor variables, but the predicted values in the <code>.pred</code> column seem reasonable!</p>
+</div>
+</div>
+</section>
+</section>
+<section id="evaluating-model-performance-video" class="level2 unnumbered">
+<h2 class="unnumbered anchored" data-anchor-id="evaluating-model-performance-video">Evaluating model performance video</h2>
+<iframe src="https://drive.google.com/file/d/16RY6iHMkjLG4cWeOwiN8KCbbmdagP9pe/preview" width="640" height="480" allow="autoplay">
+</iframe>
+</section>
+<section id="model-performance-metrics" class="level2" data-number="1.6">
+<h2 data-number="1.6" class="anchored" data-anchor-id="model-performance-metrics"><span class="header-section-number">1.6</span> Model performance metrics</h2>
+<p>Evaluating model results is an important step in the modeling process. Model evaluation should be done on the test dataset in order to see how well a model will generalize to new datasets.</p>
+<p>In the previous exercise, you trained a linear regression model to predict <code>selling_price</code> using <code>home_age</code> and <code>sqft_living</code> as predictor variables. You then created the <code>home_test_results</code> tibble using your trained model on the <code>home_test</code> data.</p>
+<p>In this exercise, you will calculate the RMSE and <span class="math inline">\(R^2\)</span> metrics using your results in <code>home_test_results</code>.</p>
+<p>The <code>home_test_results</code> tibble has been loaded into your session.</p>
+<section id="instructions-4" class="level3 unnumbered">
+<h3 class="unnumbered anchored" data-anchor-id="instructions-4">Instructions</h3>
+<ul>
+<li>Execute the first two lines of code which print the <code>home_test_results</code>. This tibble contains the actual and predicted home selling prices in the <code>home_test dataset</code>. Using <code>home_test_results</code>, calculate the RMSE and R squared metrics.</li>
+</ul>
+<div class="cell" data-layout-align="center">
+<div class="sourceCode cell-code" id="cb22"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb22-1"><a href="#cb22-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Print home_test_results</span></span>
+<span id="cb22-2"><a href="#cb22-2" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(home_test_results)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 6 × 4
+  selling_price home_age sqft_living   .pred
+          &lt;dbl&gt;    &lt;dbl&gt;       &lt;dbl&gt;   &lt;dbl&gt;
+1        411000       18        1130 380969.
+2        425000       11        1920 473812.
+3        535000        3        2360 531879.
+4        559900       20        2930 564689.
+5        552321       29        1960 450064.
+6        485000        6        2440 535532.</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb24"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb24-1"><a href="#cb24-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Calculate the RMSE metric</span></span>
+<span id="cb24-2"><a href="#cb24-2" aria-hidden="true" tabindex="-1"></a>home_test_results <span class="sc">|&gt;</span> </span>
+<span id="cb24-3"><a href="#cb24-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">rmse</span>(<span class="at">truth =</span> selling_price, <span class="at">estimate =</span> .pred) <span class="ot">-&gt;</span> ARMSE</span>
+<span id="cb24-4"><a href="#cb24-4" aria-hidden="true" tabindex="-1"></a><span class="fu">kable</span>(ARMSE)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<table class="table table-sm table-striped small">
+<thead>
+<tr class="header">
+<th style="text-align: left;">.metric</th>
+<th style="text-align: left;">.estimator</th>
+<th style="text-align: right;">.estimate</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">rmse</td>
+<td style="text-align: left;">standard</td>
+<td style="text-align: right;">49988.89</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="sourceCode cell-code" id="cb25"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb25-1"><a href="#cb25-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Same as</span></span>
+<span id="cb25-2"><a href="#cb25-2" aria-hidden="true" tabindex="-1"></a>home_test_results <span class="sc">|&gt;</span> </span>
+<span id="cb25-3"><a href="#cb25-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">summarize</span>(<span class="at">RMSE =</span> <span class="fu">sqrt</span>(<span class="fu">mean</span>((selling_price <span class="sc">-</span> .pred)<span class="sc">^</span><span class="dv">2</span>)))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 1 × 1
+    RMSE
+   &lt;dbl&gt;
+1 49989.</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb27"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb27-1"><a href="#cb27-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Calculate the R squared metric</span></span>
+<span id="cb27-2"><a href="#cb27-2" aria-hidden="true" tabindex="-1"></a>home_test_results <span class="sc">|&gt;</span> </span>
+<span id="cb27-3"><a href="#cb27-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">rsq</span>(<span class="at">truth =</span> selling_price, <span class="at">estimate =</span> .pred) <span class="ot">-&gt;</span> AR2</span>
+<span id="cb27-4"><a href="#cb27-4" aria-hidden="true" tabindex="-1"></a><span class="fu">kable</span>(AR2)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<table class="table table-sm table-striped small">
+<thead>
+<tr class="header">
+<th style="text-align: left;">.metric</th>
+<th style="text-align: left;">.estimator</th>
+<th style="text-align: right;">.estimate</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">rsq</td>
+<td style="text-align: left;">standard</td>
+<td style="text-align: right;">0.6315395</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="sourceCode cell-code" id="cb28"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb28-1"><a href="#cb28-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Same as</span></span>
+<span id="cb28-2"><a href="#cb28-2" aria-hidden="true" tabindex="-1"></a>home_test_results <span class="sc">|&gt;</span> </span>
+<span id="cb28-3"><a href="#cb28-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">summarize</span>(<span class="at">R2 =</span> <span class="fu">cor</span>(selling_price, .pred)<span class="sc">^</span><span class="dv">2</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 1 × 1
+     R2
+  &lt;dbl&gt;
+1 0.632</code></pre>
+</div>
+</div>
+<div class="callout callout-style-default callout-note callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Note
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>The RMSE metric indicates that the average prediction error for home selling prices is $49,988.89. Not bad considering you only used <code>home_age</code> and <code>sqft_living</code> as predictor variables!</p>
+</div>
+</div>
+</section>
+</section>
+<section id="r-squared-plot" class="level2" data-number="1.7">
+<h2 data-number="1.7" class="anchored" data-anchor-id="r-squared-plot"><span class="header-section-number">1.7</span> R squared plot</h2>
+<p>In the previous exercise, you got an <span class="math inline">\(R^2\)</span> value of . The <span class="math inline">\(R^2\)</span> metric ranges from 0 to 1, 0 being the worst and 1 the best.</p>
+<p>Calculating the <span class="math inline">\(R^2\)</span> value is only the first step in studying your model’s predictions.</p>
+<p>Making an <span class="math inline">\(R^2\)</span> plot is extremely important because it will uncover potential problems with your model, such as non-linear patterns or regions where your model is either over or under-predicting the outcome variable.</p>
+<p>In this exercise, you will create an <span class="math inline">\(R^2\)</span> plot of your model’s performance.</p>
+<p>The <code>home_test_results</code> tibble has been loaded into your session.</p>
+<section id="instructions-5" class="level3 unnumbered">
+<h3 class="unnumbered anchored" data-anchor-id="instructions-5">Instructions</h3>
+<ul>
+<li>Create an <span class="math inline">\(R^2\)</span> plot of your model’s performance. The x-axis should have the actual selling price and the y-axis should have the predicted values. Use the appropriate functions to add the line <span class="math inline">\(y = x\)</span> to your plot and standardize the range of both axes.</li>
+</ul>
+<div class="cell" data-layout-align="center">
+<div class="sourceCode cell-code" id="cb30"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb30-1"><a href="#cb30-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Create an R squared plot of model performance</span></span>
+<span id="cb30-2"><a href="#cb30-2" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(home_test_results, <span class="fu">aes</span>(<span class="at">x =</span> selling_price, <span class="at">y =</span> .pred)) <span class="sc">+</span></span>
+<span id="cb30-3"><a href="#cb30-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_point</span>(<span class="at">alpha =</span> <span class="fl">0.5</span>) <span class="sc">+</span> </span>
+<span id="cb30-4"><a href="#cb30-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_abline</span>(<span class="at">color =</span> <span class="st">'blue'</span>, <span class="at">linetype =</span> <span class="st">"dashed"</span>) <span class="sc">+</span></span>
+<span id="cb30-5"><a href="#cb30-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">coord_obs_pred</span>() <span class="sc">+</span></span>
+<span id="cb30-6"><a href="#cb30-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">x =</span> <span class="st">'Actual Home Selling Price'</span>, <span class="at">y =</span> <span class="st">'Predicted Selling Price'</span>) <span class="sc">+</span> </span>
+<span id="cb30-7"><a href="#cb30-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_bw</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="01-MWTM_files/figure-html/unnamed-chunk-15-1.png" class="img-fluid figure-img" width="384"></p>
+</figure>
+</div>
+</div>
+</div>
+<div class="callout callout-style-default callout-note callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Note
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>From the plot, you can see that your model tends to over-predict selling prices for homes that sold for less than $400,000, and under-predict for homes that sold for $600,000 or more. This indicates that you will have to add more predictors to your model or that linear regression may not be able to model the relationship as well as more advanced modeling techniques!</p>
+</div>
+</div>
+</section>
+</section>
+<section id="complete-model-fitting-process-with-last_fit" class="level2" data-number="1.8">
+<h2 data-number="1.8" class="anchored" data-anchor-id="complete-model-fitting-process-with-last_fit"><span class="header-section-number">1.8</span> Complete model fitting process with <code>last_fit()</code></h2>
+<p>In this exercise, you will train and evaluate the performance of a linear regression model that predicts <code>selling_price</code> using all the predictors available in the <code>home_sales</code> tibble.</p>
+<p>This exercise will give you a chance to perform the entire model fitting process with <code>tidymodels</code>, from defining your model object to evaluating its performance on the test data.</p>
+<p>Earlier in the chapter, you created an <code>rsample</code> object called <code>home_split</code> by passing the <code>home_sales</code> tibble into <code>initial_split()</code>. The <code>home_split</code> object contains the instructions for randomly splitting <code>home_sales</code> into training and test sets.</p>
+<p>The <code>home_sales</code> tibble, and <code>home_split</code> object have been loaded into this session.</p>
+<section id="instructions-6" class="level3 unnumbered">
+<h3 class="unnumbered anchored" data-anchor-id="instructions-6">Instructions</h3>
+<ul>
+<li>Use the <code>linear_reg()</code> function to define a linear regression model object. Use the <code>lm</code> engine.</li>
+</ul>
+<div class="cell" data-layout-align="center">
+<div class="sourceCode cell-code" id="cb31"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb31-1"><a href="#cb31-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Define a linear regression model</span></span>
+<span id="cb31-2"><a href="#cb31-2" aria-hidden="true" tabindex="-1"></a>linear_model <span class="ot">&lt;-</span> <span class="fu">linear_reg</span>() <span class="sc">|&gt;</span> </span>
+<span id="cb31-3"><a href="#cb31-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">set_engine</span>(<span class="st">"lm"</span>) <span class="sc">|&gt;</span> </span>
+<span id="cb31-4"><a href="#cb31-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">set_mode</span>(<span class="st">"regression"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<ul>
+<li>Train your linear regression object with the <code>last_fit()</code> function. In your model formula, use <code>selling_price</code> as the outcome variable and all other columns as predictor variables. Create a tibble with the model’s predictions on the test data.</li>
+</ul>
+<div class="cell" data-layout-align="center">
+<div class="sourceCode cell-code" id="cb32"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb32-1"><a href="#cb32-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Train linear_model with last_fit()</span></span>
+<span id="cb32-2"><a href="#cb32-2" aria-hidden="true" tabindex="-1"></a>linear_fit <span class="ot">&lt;-</span> linear_model <span class="sc">|&gt;</span> </span>
+<span id="cb32-3"><a href="#cb32-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">last_fit</span>(selling_price <span class="sc">~</span> ., <span class="at">split =</span> home_split)</span>
+<span id="cb32-4"><a href="#cb32-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb32-5"><a href="#cb32-5" aria-hidden="true" tabindex="-1"></a><span class="co"># Collect predictions and view results</span></span>
+<span id="cb32-6"><a href="#cb32-6" aria-hidden="true" tabindex="-1"></a>predictions_df <span class="ot">&lt;-</span> linear_fit <span class="sc">|&gt;</span> </span>
+<span id="cb32-7"><a href="#cb32-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">collect_predictions</span>()</span>
+<span id="cb32-8"><a href="#cb32-8" aria-hidden="true" tabindex="-1"></a>predictions_df <span class="sc">|&gt;</span> </span>
+<span id="cb32-9"><a href="#cb32-9" aria-hidden="true" tabindex="-1"></a>  <span class="fu">head</span>() <span class="sc">|&gt;</span> </span>
+<span id="cb32-10"><a href="#cb32-10" aria-hidden="true" tabindex="-1"></a>  <span class="fu">kable</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<table class="table table-sm table-striped small">
+<thead>
+<tr class="header">
+<th style="text-align: right;">.pred</th>
+<th style="text-align: left;">id</th>
+<th style="text-align: right;">.row</th>
+<th style="text-align: right;">selling_price</th>
+<th style="text-align: left;">.config</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: right;">397707.5</td>
+<td style="text-align: left;">train/test split</td>
+<td style="text-align: right;">3</td>
+<td style="text-align: right;">411000</td>
+<td style="text-align: left;">Preprocessor1_Model1</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;">440709.5</td>
+<td style="text-align: left;">train/test split</td>
+<td style="text-align: right;">9</td>
+<td style="text-align: right;">425000</td>
+<td style="text-align: left;">Preprocessor1_Model1</td>
+</tr>
+<tr class="odd">
+<td style="text-align: right;">487982.5</td>
+<td style="text-align: left;">train/test split</td>
+<td style="text-align: right;">10</td>
+<td style="text-align: right;">535000</td>
+<td style="text-align: left;">Preprocessor1_Model1</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;">586699.0</td>
+<td style="text-align: left;">train/test split</td>
+<td style="text-align: right;">14</td>
+<td style="text-align: right;">559900</td>
+<td style="text-align: left;">Preprocessor1_Model1</td>
+</tr>
+<tr class="odd">
+<td style="text-align: right;">469003.7</td>
+<td style="text-align: left;">train/test split</td>
+<td style="text-align: right;">15</td>
+<td style="text-align: right;">552321</td>
+<td style="text-align: left;">Preprocessor1_Model1</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;">561843.3</td>
+<td style="text-align: left;">train/test split</td>
+<td style="text-align: right;">17</td>
+<td style="text-align: right;">485000</td>
+<td style="text-align: left;">Preprocessor1_Model1</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<ul>
+<li>Create an <span class="math inline">\(R^2\)</span> plot of the model’s performance. The x-axis should have the actual selling price and the y-axis should have the predicted values.</li>
+</ul>
+<div class="cell" data-layout-align="center">
+<div class="sourceCode cell-code" id="cb33"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb33-1"><a href="#cb33-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Make an R squared plot using predictions_df</span></span>
+<span id="cb33-2"><a href="#cb33-2" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(predictions_df, <span class="fu">aes</span>(<span class="at">x =</span> selling_price, <span class="at">y =</span> .pred)) <span class="sc">+</span> </span>
+<span id="cb33-3"><a href="#cb33-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_point</span>(<span class="at">alpha =</span> <span class="fl">0.5</span>) <span class="sc">+</span> </span>
+<span id="cb33-4"><a href="#cb33-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_abline</span>(<span class="at">color =</span> <span class="st">'blue'</span>, <span class="at">linetype =</span> <span class="st">"dashed"</span>) <span class="sc">+</span></span>
+<span id="cb33-5"><a href="#cb33-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">coord_obs_pred</span>() <span class="sc">+</span></span>
+<span id="cb33-6"><a href="#cb33-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">x =</span> <span class="st">'Actual Home Selling Price'</span>, <span class="at">y =</span> <span class="st">'Predicted Selling Price'</span>) <span class="sc">+</span> </span>
+<span id="cb33-7"><a href="#cb33-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_bw</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="01-MWTM_files/figure-html/unnamed-chunk-18-1.png" class="img-fluid figure-img" width="384"></p>
+</figure>
+</div>
+</div>
+</div>
+<div class="callout callout-style-default callout-note callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Note
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>You have created your first machine learning pipeline and visualized the performance of your model. From the <span class="math inline">\(R^2\)</span> plot, the model still tends to over-predict selling prices for homes that sold for less than $400,000 and under-predict for homes at $600,000 or more, but it is a slight improvement over your previous model with only two predictor variables.</p>
+</div>
+</div>
+
+
+<div id="refs" class="references csl-bib-body hanging-indent" role="list" style="display: none">
+<div id="ref-R-rsample" class="csl-entry" role="listitem">
+Frick, Hannah, Fanny Chow, Max Kuhn, Michael Mahoney, Julia Silge, and Hadley Wickham. 2024. <em>Rsample: General Resampling Infrastructure</em>. <a href="https://rsample.tidymodels.org">https://rsample.tidymodels.org</a>.
+</div>
+<div id="ref-R-parsnip" class="csl-entry" role="listitem">
+Kuhn, Max, and Davis Vaughan. 2024. <em>Parsnip: A Common API to Modeling and Analysis Functions</em>. <a href="https://github.com/tidymodels/parsnip">https://github.com/tidymodels/parsnip</a>.
+</div>
+<div id="ref-R-tidymodels" class="csl-entry" role="listitem">
+Kuhn, Max, and Hadley Wickham. 2024. <em>Tidymodels: Easily Install and Load the Tidymodels Packages</em>. <a href="https://tidymodels.tidymodels.org">https://tidymodels.tidymodels.org</a>.
+</div>
+</div>
+</section>
+</section>
+
+</main> <!-- /main -->
+<script id="quarto-html-after-body" type="application/javascript">
+window.document.addEventListener("DOMContentLoaded", function (event) {
+  const toggleBodyColorMode = (bsSheetEl) => {
+    const mode = bsSheetEl.getAttribute("data-mode");
+    const bodyEl = window.document.querySelector("body");
+    if (mode === "dark") {
+      bodyEl.classList.add("quarto-dark");
+      bodyEl.classList.remove("quarto-light");
+    } else {
+      bodyEl.classList.add("quarto-light");
+      bodyEl.classList.remove("quarto-dark");
+    }
+  }
+  const toggleBodyColorPrimary = () => {
+    const bsSheetEl = window.document.querySelector("link#quarto-bootstrap");
+    if (bsSheetEl) {
+      toggleBodyColorMode(bsSheetEl);
+    }
+  }
+  toggleBodyColorPrimary();  
+  const icon = "";
+  const anchorJS = new window.AnchorJS();
+  anchorJS.options = {
+    placement: 'right',
+    icon: icon
+  };
+  anchorJS.add('.anchored');
+  const isCodeAnnotation = (el) => {
+    for (const clz of el.classList) {
+      if (clz.startsWith('code-annotation-')) {                     
+        return true;
+      }
+    }
+    return false;
+  }
+  const clipboard = new window.ClipboardJS('.code-copy-button', {
+    text: function(trigger) {
+      const codeEl = trigger.previousElementSibling.cloneNode(true);
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+    }
+  });
+  clipboard.on('success', function(e) {
+    // button target
+    const button = e.trigger;
+    // don't keep focus
+    button.blur();
+    // flash "checked"
+    button.classList.add('code-copy-button-checked');
+    var currentTitle = button.getAttribute("title");
+    button.setAttribute("title", "Copied!");
+    let tooltip;
+    if (window.bootstrap) {
+      button.setAttribute("data-bs-toggle", "tooltip");
+      button.setAttribute("data-bs-placement", "left");
+      button.setAttribute("data-bs-title", "Copied!");
+      tooltip = new bootstrap.Tooltip(button, 
+        { trigger: "manual", 
+          customClass: "code-copy-button-tooltip",
+          offset: [0, -8]});
+      tooltip.show();    
+    }
+    setTimeout(function() {
+      if (tooltip) {
+        tooltip.hide();
+        button.removeAttribute("data-bs-title");
+        button.removeAttribute("data-bs-toggle");
+        button.removeAttribute("data-bs-placement");
+      }
+      button.setAttribute("title", currentTitle);
+      button.classList.remove('code-copy-button-checked');
+    }, 1000);
+    // clear code selection
+    e.clearSelection();
+  });
+  function tippyHover(el, contentFn) {
+    const config = {
+      allowHTML: true,
+      content: contentFn,
+      maxWidth: 500,
+      delay: 100,
+      arrow: false,
+      appendTo: function(el) {
+          return el.parentElement;
+      },
+      interactive: true,
+      interactiveBorder: 10,
+      theme: 'quarto',
+      placement: 'bottom-start'
+    };
+    window.tippy(el, config); 
+  }
+  const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+  for (var i=0; i<noterefs.length; i++) {
+    const ref = noterefs[i];
+    tippyHover(ref, function() {
+      // use id or data attribute instead here
+      let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+      try { href = new URL(href).hash; } catch {}
+      const id = href.replace(/^#\/?/, "");
+      const note = window.document.getElementById(id);
+      return note.innerHTML;
+    });
+  }
+      let selectedAnnoteEl;
+      const selectorForAnnotation = ( cell, annotation) => {
+        let cellAttr = 'data-code-cell="' + cell + '"';
+        let lineAttr = 'data-code-annotation="' +  annotation + '"';
+        const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+        return selector;
+      }
+      const selectCodeLines = (annoteEl) => {
+        const doc = window.document;
+        const targetCell = annoteEl.getAttribute("data-target-cell");
+        const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+        const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+        const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+        const lineIds = lines.map((line) => {
+          return targetCell + "-" + line;
+        })
+        let top = null;
+        let height = null;
+        let parent = null;
+        if (lineIds.length > 0) {
+            //compute the position of the single el (top and bottom and make a div)
+            const el = window.document.getElementById(lineIds[0]);
+            top = el.offsetTop;
+            height = el.offsetHeight;
+            parent = el.parentElement.parentElement;
+          if (lineIds.length > 1) {
+            const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+            const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+            height = bottom - top;
+          }
+          if (top !== null && height !== null && parent !== null) {
+            // cook up a div (if necessary) and position it 
+            let div = window.document.getElementById("code-annotation-line-highlight");
+            if (div === null) {
+              div = window.document.createElement("div");
+              div.setAttribute("id", "code-annotation-line-highlight");
+              div.style.position = 'absolute';
+              parent.appendChild(div);
+            }
+            div.style.top = top - 2 + "px";
+            div.style.height = height + 4 + "px";
+            let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+            if (gutterDiv === null) {
+              gutterDiv = window.document.createElement("div");
+              gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+              gutterDiv.style.position = 'absolute';
+              const codeCell = window.document.getElementById(targetCell);
+              const gutter = codeCell.querySelector('.code-annotation-gutter');
+              gutter.appendChild(gutterDiv);
+            }
+            gutterDiv.style.top = top - 2 + "px";
+            gutterDiv.style.height = height + 4 + "px";
+          }
+          selectedAnnoteEl = annoteEl;
+        }
+      };
+      const unselectCodeLines = () => {
+        const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+        elementsIds.forEach((elId) => {
+          const div = window.document.getElementById(elId);
+          if (div) {
+            div.remove();
+          }
+        });
+        selectedAnnoteEl = undefined;
+      };
+      // Attach click handler to the DT
+      const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+      for (const annoteDlNode of annoteDls) {
+        annoteDlNode.addEventListener('click', (event) => {
+          const clickedEl = event.target;
+          if (clickedEl !== selectedAnnoteEl) {
+            unselectCodeLines();
+            const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+            if (activeEl) {
+              activeEl.classList.remove('code-annotation-active');
+            }
+            selectCodeLines(clickedEl);
+            clickedEl.classList.add('code-annotation-active');
+          } else {
+            // Unselect the line
+            unselectCodeLines();
+            clickedEl.classList.remove('code-annotation-active');
+          }
+        });
+      }
+  const findCites = (el) => {
+    const parentEl = el.parentElement;
+    if (parentEl) {
+      const cites = parentEl.dataset.cites;
+      if (cites) {
+        return {
+          el,
+          cites: cites.split(' ')
+        };
+      } else {
+        return findCites(el.parentElement)
+      }
+    } else {
+      return undefined;
+    }
+  };
+  var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+  for (var i=0; i<bibliorefs.length; i++) {
+    const ref = bibliorefs[i];
+    const citeInfo = findCites(ref);
+    if (citeInfo) {
+      tippyHover(citeInfo.el, function() {
+        var popup = window.document.createElement('div');
+        citeInfo.cites.forEach(function(cite) {
+          var citeDiv = window.document.createElement('div');
+          citeDiv.classList.add('hanging-indent');
+          citeDiv.classList.add('csl-entry');
+          var biblioDiv = window.document.getElementById('ref-' + cite);
+          if (biblioDiv) {
+            citeDiv.innerHTML = biblioDiv.innerHTML;
+          }
+          popup.appendChild(citeDiv);
+        });
+        return popup.innerHTML;
+      });
+    }
+  }
+});
+</script>
+<nav class="page-navigation">
+  <div class="nav-page nav-page-previous">
+      <a href="./index.html" class="pagination-link">
+        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text">Preface</span>
+      </a>          
+  </div>
+  <div class="nav-page nav-page-next">
+      <a href="./references.html" class="pagination-link">
+        <span class="nav-page-text">References</span> <i class="bi bi-arrow-right-short"></i>
+      </a>
+  </div>
+</nav>
+</div> <!-- /content -->
+
+
+
+</body></html>
