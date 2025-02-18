@@ -85,7 +85,7 @@ nrow(home_training)
 nrow(home_test)
 ```
 
-:::{.callout-note}
+:::{.callout-note icon=false}
 Since the `home_sales` data has `r nrow(home_sales)` rows, it is appropriate to allocate more rows into the test set. This will provide more data for the model evaluation step.
 :::
 
@@ -122,12 +122,12 @@ home_test |>
             sd_sell_price = sd(selling_price)) |> 
   kable()
 ```
-:::{.callout-note}
+:::{.callout-note icon=false}
 The minimum and maximum selling prices in both datasets are the same. The mean and standard deviation are also similar. Stratifying by the outcome variable ensures the model fitting process is performed on a representative sample of the original data.
 :::
 
 
-## Linear regression with tidymodels video {-   }
+## Linear regression with tidymodels video {-}
 
 <iframe src="https://drive.google.com/file/d/1kD5IDbJW4yRIcN1nLUNaL78gH64aMDz9/preview" width="640" height="480" allow="autoplay"></iframe>
 
@@ -144,7 +144,7 @@ The `home_training` and `home_test` tibbles that you created in the previous les
 
 ### Instructions {-}
 
-* Initialize a linear regression object, `linear_model`, with the appropriate `parsnip` function.  Use the `"lm"` engine.  Set the mode to `"regression"`.
+* Initialize a linear regression object, `linear_model` (this is often called a specification and will frequently be stored as `linear_spec` versus `linear_model`), with the appropriate `parsnip` function.  Use the `"lm"` engine.  Set the mode to `"regression"`.
 
 ```{r}
 # Initialize a linear regression object, linear_model
@@ -169,7 +169,7 @@ lm_fit
 tidy(lm_fit) |> 
   kable()
 ```
-:::{.callout-note}
+:::{.callout-note icon=false}
 You have defined your model with `linear_reg()` and trained it to predict `selling_price` using `home_age` and `sqft_living`. Printing a `parsnip` model fit object displays useful model information, such as the training time, model formula used during training, and the estimated model parameters.
 :::
 
@@ -190,7 +190,7 @@ Which of the following statements is correct?
 
 * The estimated intercept is 127825.
 
-:::{.callout-note}
+:::{.callout-note icon=false}
 The `tidy()` function automatically creates a tibble of estimated model parameters. Since `sqft_living` has a positive estimated parameter, the selling price of homes increases with the square footage. Conversely, since `home_age` has a negative estimated parameter, older homes tend to have lower selling prices.
 :::
 
@@ -217,7 +217,7 @@ head(home_predictions) |>
   kable()
 ```
 
-* Create a tibble with the `selling_price`, `home_age`, and `sqft_living` columns from the test dataset and the predicted home selling prices.
+* Create a tibble with the `selling_price`, `home_age`, and `sqft_living` columns from the test dataset and the predicted home selling prices named `home_test_results`.
 
 ```{r}
 # Combine test data with predictions
@@ -226,8 +226,14 @@ home_test_results <- home_test |>
   bind_cols(home_predictions)
 head(home_test_results) |> 
   kable()
+# Or
+broom::augment(lm_fit, new_data = home_test) |> 
+  select(.pred, selling_price, home_age, 
+         sqft_living) -> home_test_results
+head(home_test_results) |> 
+  kable()
 ```
-:::{.callout-note}
+:::{.callout-note icon=false}
 You have trained a linear regression model and used it to predict the selling prices of homes in the test dataset! The model only used two predictor variables, but the predicted values in the `.pred` column seem reasonable!
 :::
 
@@ -268,12 +274,12 @@ kable(AR2)
 home_test_results |> 
   summarize(R2 = cor(selling_price, .pred)^2)
 ```
-:::{.callout-note}
+:::{.callout-note icon=false}
 The RMSE metric indicates that the average prediction error for home selling prices is `r scales::dollar(ARMSE$.estimate)`. Not bad considering you only used `home_age` and `sqft_living` as predictor variables!
 :::
 
 ## R squared plot
-In the previous exercise, you got an $R^2$ value of `r AR2$estimate`. The $R^2$ metric ranges from 0 to 1, 0 being the worst and 1 the best.
+In the previous exercise, you got an $R^2$ value of `r AR2$.estimate`. The $R^2$ metric ranges from 0 to 1, 0 being the worst and 1 the best.
 
 Calculating the $R^2$ value is only the first step in studying your model's predictions.
 
@@ -293,10 +299,12 @@ ggplot(home_test_results, aes(x = selling_price, y = .pred)) +
   geom_point(alpha = 0.5) + 
   geom_abline(color = 'blue', linetype = "dashed") +
   coord_obs_pred() +
+  scale_x_continuous(labels = scales::label_currency()) + 
+  scale_y_continuous(labels = scales::label_currency()) + 
   labs(x = 'Actual Home Selling Price', y = 'Predicted Selling Price') + 
-  theme_bw()
+  theme_bw() 
 ```
-:::{.callout-note}
+:::{.callout-note icon=false}
 From the plot, you can see that your model tends to over-predict selling prices for homes that sold for less than $400,000, and under-predict for homes that sold for $600,000 or more. This indicates that you will have to add more predictors to your model or that linear regression may not be able to model the relationship as well as more advanced modeling techniques!
 :::
 
@@ -311,10 +319,10 @@ The `home_sales` tibble, and `home_split` object have been loaded into this sess
 
 ### Instructions {-}
 
-* Use the `linear_reg()` function to define a linear regression model object. Use the `lm` engine.
+* Use the `linear_reg()` function to define a linear regression **specification**. Use the `lm` engine.
 
 ```{r}
-# Define a linear regression model
+# Define a linear regression specification
 linear_model <- linear_reg() |> 
   set_engine("lm") |> 
   set_mode("regression")
@@ -343,10 +351,12 @@ ggplot(predictions_df, aes(x = selling_price, y = .pred)) +
   geom_point(alpha = 0.5) + 
   geom_abline(color = 'blue', linetype = "dashed") +
   coord_obs_pred() +
+  scale_x_continuous(labels = scales::label_currency()) + 
+  scale_y_continuous(labels = scales::label_currency()) + 
   labs(x = 'Actual Home Selling Price', y = 'Predicted Selling Price') + 
   theme_bw()
 ```
 
-:::{.callout-note}
+:::{.callout-note icon=false}
 You have created your first machine learning pipeline and visualized the performance of your model. From the $R^2$ plot, the model still tends to over-predict selling prices for homes that sold for less than $400,000 and under-predict for homes at $600,000 or more, but it is a slight improvement over your previous model with only two predictor variables.
 :::
